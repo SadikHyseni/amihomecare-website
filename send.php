@@ -219,7 +219,13 @@ if ($email !== '') {
 }
 
 $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-$sent = @mail(TO_EMAIL, $encodedSubject, $body, implode("\r\n", $headers), '-f' . FROM_EMAIL);
+// one.com's PHP rejects the optional fifth mail() argument, so it is not used.
+// The From header above (an address on this domain) is enough for one.com to deliver the message.
+try {
+    $sent = @mail(TO_EMAIL, $encodedSubject, $body, implode("\r\n", $headers));
+} catch (\Throwable $e) {
+    $sent = false;
+}
 if (!$sent) {
     respond(false, 'Please call us on 020 3026 3706 or email info@amihomecare.com.', 500);
 }

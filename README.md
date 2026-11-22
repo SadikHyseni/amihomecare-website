@@ -12,6 +12,8 @@ A static website (HTML, CSS and a little JavaScript) with one PHP file for the c
 | `careers.html` | Vacancies and the job application form |
 | `contact.html` | Contact details and the care enquiry form |
 | `policies.html` | Policies and documents (PDF links and on-page preview) |
+| `carbon-reduction-plan.html` | Carbon Reduction Plan summary and signed PDF. **This exact address is quoted in the signed documents and the Hounslow tender. Do not rename it.** |
+| `net-zero-policy.html` | Net Zero and Environmental Sustainability Policy summary and signed PDF. **Same: do not rename.** |
 | `privacy.html` | Summary of the Privacy Notice, plus how the website handles enquiries |
 | `404.html` | "Page not found" page |
 | `send.php` | Emails form submissions to info@amihomecare.com, with spam protection |
@@ -19,7 +21,7 @@ A static website (HTML, CSS and a little JavaScript) with one PHP file for the c
 | `js/main.js` | Menu, forms, PDF preview and the optional analytics consent banner |
 | `js/vendor/` | pdf.js (used only when someone clicks "Preview on this page") |
 | `img/` | Photos in several sizes (`name-480.webp`, `-800`, `-1200`, full size), social image, icons, and `logo-trimmed.png` (the official logo with its empty margins cropped, used in the header and footer) |
-| `docs/` | The three policy PDFs |
+| `docs/` | The three policy PDFs. Tender Appendix 9 must never be put here. |
 | `.htaccess` | Server settings: redirects from the old site's addresses, 404 page, caching, security headers |
 | `robots.txt`, `sitemap.xml` | For search engines |
 | `favicon.ico`, `apple-touch-icon.png`, `site.webmanifest` | Browser and phone icons |
@@ -42,7 +44,6 @@ Live Server cannot run PHP, so the forms will say the message could not be sent.
 1. **Preview first:** upload everything except `_backup-*` folders and `README.md` into a folder called `new`, then open `amihomecare.com/new/`. Pages, photos and PDFs will work. (The 404 page and redirects only work at the top level.)
 2. **Go live:** back up the current site, then upload the same files to the main website folder. Do not press Publish in the one.com Website Builder afterwards, as it would replace the new site.
 3. **Test the forms:** send one test enquiry and one test application, then check they arrive at info@amihomecare.com (check the spam folder too). If nothing arrives, ask one.com support to confirm PHP email (`mail()`) is enabled for the domain.
-4. **Check the official CQC widget** appears in the CQC section of the home page (it loads from cqc.org.uk).
 5. **Turn on HTTPS redirect** in the one.com control panel if it isn't already on.
 6. **Google:** submit `https://amihomecare.com/sitemap.xml` in Google Search Console, and update the website link on your Google Business Profile if needed.
 
@@ -56,7 +57,7 @@ The site currently sets no cookies and uses no analytics, so no cookie banner is
 
 ## If the CQC rating changes
 
-The official CQC widget in the home page's CQC section updates automatically. The rating text in the footer trust strip (all 8 pages), on `index.html` and on `about.html` (Good, report published 28 May 2021) must be updated by hand.
+The CQC rating is written by hand in three places: the CQC section and ratings box on `index.html`, the footer trust strip (all 8 pages) and `about.html` (Good, report published 28 May 2021). Update all of them if CQC publishes a new rating.
 
 ## Information still to confirm with Ami Home Care
 
@@ -65,7 +66,6 @@ The official CQC widget in the home page's CQC section updates automatically. Th
 - **Field Manager** job description.
 - **Funding** accepted (private, council, NHS, direct payments). This is not stated on the site yet.
 - **Areas covered**: the site says Hounslow and nearby areas, with care teams across Hounslow, Hillingdon and Surrey.
-- Whether to keep the **COVID-19** section on the Careers page (now written in the past tense).
 - **Privacy wording** for website enquiries and job applicants, including how long enquiries are kept.
 - Genuine **testimonials** with permission to publish, if wanted.
 - Real **photos** of the team. The current photos are AI-generated illustrations and must not be presented as real staff or clients.

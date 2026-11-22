@@ -3,22 +3,32 @@
 # If the site shows "Internal Server Error" after uploading it, rename this file to
 # "htaccess-disabled.txt" and contact one.com support.
 
+# Always use the secure https address
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Keep the old-site backup folder private (it stays in File Manager)
+RedirectMatch 404 ^/old-site-2026-11-22(/.*)?$
+
 # Custom "page not found" page
 ErrorDocument 404 /404.html
 
 # Send visitors and search engines from the old Website Builder addresses to the new pages
 <IfModule mod_alias.c>
+  Redirect 301 /our-services.html /services.html
+  Redirect 301 /about-us.html /about.html
+  Redirect 301 /vacancies.html /careers.html
   Redirect 301 /our-services /services.html
   Redirect 301 /about-us /about.html
   Redirect 301 /vacancies /careers.html
   Redirect 301 /privacy-notice-for-service-users.html /privacy.html
   Redirect 301 /privacy-notice-for-service-users /privacy.html
-  Redirect 301 /net-zero-policy.html /policies.html
-  Redirect 301 /net-zero-policy /policies.html
-  Redirect 301 /carbon-reduction-plan.html /policies.html
-  Redirect 301 /carbon-reduction-plan /policies.html
+  Redirect 301 /net-zero-policy /net-zero-policy.html
+  Redirect 301 /carbon-reduction-plan /carbon-reduction-plan.html
   Redirect 301 "/Privacy Notice for Service Users.pdf" /docs/privacy-notice-for-service-users.pdf
-  Redirect 301 "/Net Zero Commitment Policy.pdf" /docs/net-zero-commitment-policy.pdf
+  Redirect 301 "/Net Zero Commitment Policy.pdf" /docs/net-zero-and-environmental-sustainability-policy.pdf
+  Redirect 301 /docs/net-zero-commitment-policy.pdf /docs/net-zero-and-environmental-sustainability-policy.pdf
   Redirect 301 "/Carbon Reduction Plan.pdf" /docs/carbon-reduction-plan.pdf
 </IfModule>
 
