@@ -14,7 +14,7 @@ A static website (HTML, CSS and a little JavaScript) with one PHP file for the c
 | `careers.html` | Vacancies and the job application form |
 | `contact.html` | Contact details and the care enquiry form |
 | `policies.html` | Policies and documents (PDF links and on-page preview) |
-| `carbon-reduction-plan.html` | Carbon Reduction Plan summary and signed PDF. **This exact address is quoted in the signed documents and the Hounslow tender. Do not rename it.** |
+| `carbon-reduction-plan.html` | Carbon Reduction Plan summary and signed PDF. **This exact address is quoted in the signed documents. Do not rename it.** |
 | `net-zero-policy.html` | Net Zero and Environmental Sustainability Policy summary and signed PDF. **Same: do not rename.** |
 | `privacy.html` | Summary of the Privacy Notice, plus how the website handles enquiries |
 | `404.html` | "Page not found" page |
@@ -23,8 +23,8 @@ A static website (HTML, CSS and a little JavaScript) with one PHP file for the c
 | `js/main.js` | Menu, forms, PDF preview and the optional analytics consent banner |
 | `js/vendor/` | pdf.js (used only when someone clicks "Preview on this page") |
 | `img/` | Photos in several sizes (`name-480.webp`, `-800`, `-1200`, full size), social image, icons, and `logo-trimmed.png` (the official logo with its empty margins cropped, used in the header and footer) |
-| `docs/` | The three policy PDFs. Tender Appendix 9 must never be put here. |
-| `.htaccess` | Server settings: https redirect, hides the old-site backup, redirects from the old site's addresses, 404 page, caching, security headers |
+| `docs/` | The three policy PDFs. |
+| `.htaccess` | Server settings: https redirect, hides the backup folder, redirects from the old site's addresses, 404 page, caching, security headers |
 | `robots.txt`, `sitemap.xml` | For search engines |
 | `favicon.ico`, `apple-touch-icon.png`, `site.webmanifest` | Browser and phone icons |
 | `_backup-*` folders | Earlier versions. **Do not upload.** |
@@ -45,7 +45,7 @@ Live Server cannot run PHP, so the forms will say the message could not be sent.
 
 - **Uploading changes:** in one.com File Manager, upload the changed files to the main website folder, replacing the old ones. Never upload `README.md`, `.git`, `.gitignore`, `_backup-*` or `_to_delete` folders.
 - **Never press Publish in the one.com Website Builder.** It would replace this site with the old one.
-- **Old website backup:** the previous Website Builder site is kept in File Manager in the folder `old-site-2026-11-22`. `.htaccess` hides it from visitors (it returns "page not found"). It also still exists in Website Builder.
+- **Old website backup:** the previous site is kept in a backup folder in File Manager, hidden from visitors. It also still exists in Website Builder.
 - **HTTPS:** `.htaccess` sends every `http://` visit to `https://`.
 - **Forms:** `send.php` uses PHP `mail()`. one.com's PHP rejects mail()'s optional fifth argument, so it is not used; do not add it back. Tested on 22 November 2026: the enquiry form sends to info@amihomecare.com. If messages stop arriving, check spam, then ask one.com support to confirm PHP email is enabled.
 - **Old addresses:** `.htaccess` permanently redirects the old Website Builder addresses (`/our-services`, `/about-us`, `/vacancies`, the same with `.html`, the old policy pages and PDF links) to the new pages, so existing links and search results keep working. The Privacy Notice PDF refers to `/privacy-notice-for-service-users`, which redirects to `privacy.html`.
