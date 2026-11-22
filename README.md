@@ -51,15 +51,6 @@ Live Server cannot run PHP, so the forms will say the message could not be sent.
 - **Old addresses:** `.htaccess` permanently redirects the old Website Builder addresses (`/our-services`, `/about-us`, `/vacancies`, the same with `.html`, the old policy pages and PDF links) to the new pages, so existing links and search results keep working. The Privacy Notice PDF refers to `/privacy-notice-for-service-users`, which redirects to `privacy.html`.
 - If the site shows "Internal Server Error" right after uploading `.htaccess`, rename that file to `htaccess-disabled.txt` and contact one.com support.
 
-### Still to do
-
-- Test the **job application form** on the Careers page.
-- **Google:** submit `https://www.amihomecare.com/sitemap.xml` in Google Search Console, and update the website link on the Google Business Profile if needed.
-
-## Analytics and cookies
-
-The site currently sets no cookies and uses no analytics, so no cookie banner is shown. To add Google Analytics later, put the measurement ID in `ANALYTICS_ID` at the top of `js/main.js`. A consent banner then appears automatically, analytics only load after a visitor accepts, and a "Cookie settings" link appears in the footer. Update the "Using this website" section of `privacy.html` at the same time.
-
 ## If the CQC rating changes
 
 The CQC rating is written by hand in three places: the CQC section and ratings box on `index.html`, the footer trust strip (all 10 pages) and `about.html` (Good, report published 28 May 2021). Update all of them if CQC publishes a new rating.
