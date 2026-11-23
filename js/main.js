@@ -171,7 +171,16 @@
     add(els.email, emailMsg);
     if (els.postcode) {
       var postcode = value(form, 'postcode');
-      add(els.postcode, postcode && !RE_POSTCODE.test(postcode) ? 'Enter a full UK postcode, like TW7 6EL.' : '');
+      var postcodeMsg = postcode && !RE_POSTCODE.test(postcode) ? 'Enter a full UK postcode, like TW7 6EL.' : '';
+      if (isApplication && !postcode) postcodeMsg = 'Enter your postcode.';
+      add(els.postcode, postcodeMsg);
+    }
+    if (els.cv && els.cv.files) {
+      var cv = els.cv.files[0];
+      var cvMsg = '';
+      if (cv && !/\.(pdf|docx?)$/i.test(cv.name)) cvMsg = 'Your CV must be a PDF or Word document.';
+      else if (cv && cv.size > 5 * 1024 * 1024) cvMsg = 'Your CV is larger than 5 MB. Please upload a smaller file.';
+      add(els.cv, cvMsg);
     }
     if (isApplication) add(els.role, value(form, 'role') ? '' : 'Choose the role you are applying for.');
     add(els.consent, els.consent && els.consent.checked ? '' : 'Tick the box so we can use your details to reply.');

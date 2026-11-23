@@ -25,8 +25,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=Manrope:wght@400..800&amp;display=swap">
-<link rel="stylesheet" href="css/styles.css?v=20261122b">
-<script src="js/main.js?v=20261122b" async></script>
+<link rel="stylesheet" href="css/styles.css?v=20261123a">
+<script src="js/main.js?v=20261123a" async></script>
 </head>
 <body class="page-careers">
 <svg xmlns="http://www.w3.org/2000/svg" class="sprite" aria-hidden="true" focusable="false">
@@ -169,7 +169,7 @@
       <p>Tell us a little about yourself and we'll be in touch. Prefer to talk? Call <a href="tel:+442030263706">020 3026 3706</a> or email <a href="mailto:info@amihomecare.com">info@amihomecare.com</a>.</p>
       <figure class="media ratio-4x3"><img src="img/careers-800.webp" srcset="img/careers-480.webp 480w, img/careers-800.webp 800w, img/careers-1200.webp 1200w, img/careers-1448.webp 1448w" sizes="(min-width: 1240px) 450px, (min-width: 901px) 38vw, calc(100vw - 40px)" width="1448" height="1086" alt="Three carers in navy uniforms laughing together on a London street" loading="lazy" decoding="async" style="object-position:50% 35%"></figure>
     </div>
-    <form class="form" id="application" data-form="application" action="send.php" method="post" novalidate aria-labelledby="apply-title">
+    <form class="form" id="application" data-form="application" action="send.php" method="post" enctype="multipart/form-data" novalidate aria-labelledby="apply-title">
       <p class="form__intro">All fields are required unless marked optional.</p>
       <input type="hidden" name="form_type" value="application">
       <div class="fields">
@@ -189,6 +189,12 @@
           <p class="err" id="a-email-err"></p>
         </div>
         <div class="field">
+          <label for="a-postcode">Postcode</label>
+          <input id="a-postcode" name="postcode" type="text" autocomplete="postal-code" autocapitalize="characters" spellcheck="false" required aria-describedby="a-postcode-hint a-postcode-err">
+          <p class="hint" id="a-postcode-hint">Helps us offer you work close to home.</p>
+          <p class="err" id="a-postcode-err"></p>
+        </div>
+        <div class="field">
           <label for="a-role">Role</label>
           <select id="a-role" name="role" required aria-describedby="a-role-err">
             <option value="">Choose a role</option>
@@ -200,6 +206,12 @@
         <div class="field field--full">
           <label for="a-message">Experience and availability <span class="optional">(optional)</span></label>
           <textarea id="a-message" name="message" rows="4" maxlength="3000"></textarea>
+        </div>
+        <div class="field field--full">
+          <label for="a-cv">Upload your CV <span class="optional">(optional)</span></label>
+          <input id="a-cv" name="cv" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" aria-describedby="a-cv-hint a-cv-err">
+          <p class="hint" id="a-cv-hint">PDF or Word document, up to 5 MB.</p>
+          <p class="err" id="a-cv-err"></p>
         </div>
         <div class="field field--full">
           <div class="consent">

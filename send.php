@@ -37,6 +37,12 @@ const CARE_TYPES = [
 ];
 const METHODS = ['phone' => 'Phone', 'email' => 'Email', 'either' => 'Either'];
 const ROLES = ['Care Worker', 'Field Manager'];
+const CV_MAX_BYTES = 5 * 1024 * 1024;         // largest CV accepted (5 MB)
+const CV_TYPES = [                            // allowed CV file types
+    'pdf'  => 'application/pdf',
+    'doc'  => 'application/msword',
+    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
 // -----------------------------------------------------------------------------
 
 $wantsJson = stripos((string)($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json') !== false;
@@ -142,16 +148,54 @@ if (strlen($name) < 2) $errors[] = 'name';
 if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'email';
 if ($phone !== '' && !preg_match('/^(\+44|0)\d{9,10}$/', $phoneDigits)) $errors[] = 'phone';
 if (!$consent) $errors[] = 'consent';
+if ($postcode !== '' && !preg_match('/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/', $postcode)) $errors[] = 'postcode';
 if ($type === 'application') {
     if ($email === '') $errors[] = 'email';
+    if ($postcode === '') $errors[] = 'postcode';
     if ($phone === '') $errors[] = 'phone';
     if (!in_array($role, ROLES, true)) $errors[] = 'role';
 } else {
     if ($email === '' && $phone === '') $errors[] = 'contact';
-    if ($postcode !== '' && !preg_match('/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/', $postcode)) $errors[] = 'postcode';
     if ($careKey !== '' && !isset(CARE_TYPES[$careKey])) $errors[] = 'care';
     if ($methodKey !== '' && !isset(METHODS[$methodKey])) $errors[] = 'method';
 }
+// CV (job applications only, optional). Checked here and attached to the email; never saved on the server.
+$cv = null;
+$cvError = '';
+if ($type === 'application' && isset($_FILES['cv']) && is_array($_FILES['cv'])) {
+    $f = $_FILES['cv'];
+    $err = is_int($f['error'] ?? null) ? $f['error'] : UPLOAD_ERR_NO_FILE;
+    if ($err === UPLOAD_ERR_INI_SIZE || $err === UPLOAD_ERR_FORM_SIZE) {
+        $cvError = 'Your CV is too large. Please upload a file under 5 MB.';
+    } elseif ($err !== UPLOAD_ERR_NO_FILE && $err !== UPLOAD_ERR_OK) {
+        $cvError = 'Your CV could not be uploaded. Please try again, or email it to info@amihomecare.com.';
+    } elseif ($err === UPLOAD_ERR_OK) {
+        $tmp  = (string)$f['tmp_name'];
+        $size = (int)$f['size'];
+        $ext  = strtolower((string)pathinfo((string)$f['name'], PATHINFO_EXTENSION));
+        $head = is_uploaded_file($tmp) ? (string)@file_get_contents($tmp, false, null, 0, 8) : '';
+        $magicOk = ($ext === 'pdf' && strncmp($head, '%PDF', 4) === 0)
+            || ($ext === 'docx' && strncmp($head, "PK\x03\x04", 4) === 0)
+            || ($ext === 'doc' && strncmp($head, "\xD0\xCF\x11\xE0", 4) === 0);
+        if (!isset(CV_TYPES[$ext]) || !$magicOk) {
+            $cvError = 'Your CV must be a PDF or Word document.';
+        } elseif ($size <= 0 || $size > CV_MAX_BYTES) {
+            $cvError = 'Your CV is too large. Please upload a file under 5 MB.';
+        } else {
+            $safeName = cut((string)preg_replace('/[^A-Za-z0-9._ -]+/', '', (string)pathinfo((string)$f['name'], PATHINFO_FILENAME)), 60);
+            if (trim($safeName) === '') $safeName = 'CV';
+            $cv = [
+                'name' => trim($safeName) . '.' . $ext,
+                'type' => CV_TYPES[$ext],
+                'data' => (string)file_get_contents($tmp),
+            ];
+        }
+    }
+}
+if ($cvError !== '') {
+    respond(false, $cvError, 422);
+}
+
 if ($errors) {
     respond(false, 'Some details are missing or incorrect. Please check the form and try again.', 422);
 }
@@ -163,7 +207,7 @@ if (preg_match($linkPattern, $name) || preg_match_all($linkPattern, $message) > 
 }
 
 // 5. Duplicate check
-$fingerprint = hash('sha256', implode('|', [$type, strtolower($name), strtolower($email), $phoneDigits, $role, $careKey, $message]));
+$fingerprint = hash('sha256', implode('|', [$type, strtolower($name), strtolower($email), $phoneDigits, $role, $careKey, $message, $cv ? hash('sha256', $cv['data']) : '']));
 $dupFile = storeDir() . 'ami_dup_' . $fingerprint;
 if (is_file($dupFile) && (int)@file_get_contents($dupFile) > $now - DUPLICATE_WINDOW) {
     respond(true);
@@ -177,10 +221,12 @@ if ($type === 'application') {
     $lines = [
         'New job application from the website',
         str_repeat('-', 44),
-        "Name:   {$name}",
-        "Role:   {$role}",
-        "Phone:  {$phone}",
-        "Email:  {$email}",
+        "Name:      {$name}",
+        "Role:      {$role}",
+        "Phone:     {$phone}",
+        "Email:     {$email}",
+        "Postcode:  {$postcode}",
+        "CV:        " . ($cv ? "Attached ({$cv['name']})" : 'Not attached'),
     ];
 } else {
     $subject = "Care enquiry: {$careLabel} – {$name}";
@@ -210,10 +256,26 @@ $body = implode("\r\n", $lines);
 $headers = [
     'From: Ami Home Care Website <' . FROM_EMAIL . '>',
     'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset=UTF-8',
-    'Content-Transfer-Encoding: 8bit',
     'X-Mailer: AmiHomeCareWebsite',
 ];
+if ($cv) {
+    // Email with the CV attached
+    $boundary = 'ami_' . bin2hex(random_bytes(12));
+    $headers[] = 'Content-Type: multipart/mixed; boundary="' . $boundary . '"';
+    $body = "--{$boundary}\r\n"
+        . "Content-Type: text/plain; charset=UTF-8\r\n"
+        . "Content-Transfer-Encoding: 8bit\r\n\r\n"
+        . $body . "\r\n\r\n"
+        . "--{$boundary}\r\n"
+        . "Content-Type: {$cv['type']}; name=\"{$cv['name']}\"\r\n"
+        . "Content-Transfer-Encoding: base64\r\n"
+        . "Content-Disposition: attachment; filename=\"{$cv['name']}\"\r\n\r\n"
+        . chunk_split(base64_encode($cv['data']), 76, "\r\n")
+        . "--{$boundary}--\r\n";
+} else {
+    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
+    $headers[] = 'Content-Transfer-Encoding: 8bit';
+}
 if ($email !== '') {
     $headers[] = 'Reply-To: ' . $email;
 }
